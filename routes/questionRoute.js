@@ -24,8 +24,8 @@ router.get('/getSingleQuestion/:quizID/:questionNumber', async(req, res) => {
         return res.send(obj);
     }
     
-    catch {
-        return res.send('error');
+    catch(e) {
+        return res.send(e);
     }
 });
 
@@ -42,8 +42,8 @@ router.post('/answerSingleQuestion/:studentID/:questionID/:answerID', async(req,
         return res.send(serviceResponse);
     }
 
-    catch {
-        return res.send('error');
+    catch(e) {
+        return res.send(e);
     }
 });
 

@@ -7,7 +7,7 @@ router.post('/register/:username/:password', async (req, res) => {
     const {username, password} = req.params;
 
     if(username.length === 0 || password.length === 0) {
-        return 'error';
+        return res.send('error: password and username cant be empty');
     }
 
     try {
@@ -15,8 +15,8 @@ router.post('/register/:username/:password', async (req, res) => {
         return res.send(serviceResponse);
     }
     
-    catch {
-        return res.send('error');
+    catch(e) {
+        return res.send(e);
     }
 });
 
@@ -32,8 +32,8 @@ router.get('/login/:username/:password', async (req, res) => {
         return res.send(serviceResponse);
     }
 
-    catch {
-        res.send('error');
+    catch(e) {
+        return res.send(e);
     }
 });
 

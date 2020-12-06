@@ -23,8 +23,8 @@ router.get('/quizStarted/:studentID/:quizID', async (req, res) => {
         return res.send(serviceResponse);
     }
 
-    catch {
-        return res.send('error');
+    catch(e) {
+        return res.send(e);
     }
 });
 
@@ -37,8 +37,8 @@ router.get('/score/:studentID/:quizID', async (req, res) => {
         return res.send(serviceResponse);
     }
 
-    catch {
-        return res.send('error');
+    catch(e) {
+        return res.send(e);
     }
 });
 
