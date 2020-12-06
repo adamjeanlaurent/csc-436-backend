@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -14,5 +15,8 @@
     "express": "^4.17.1",
     "md5": "^2.3.0",
     "mysql2": "^2.2.5"
+  },
+  "engine": {
+    "node": "14.15.1"
   }
 }

@@ -14,6 +14,10 @@ app.use('/api/quiz', quizRoute);
 app.use('/api/question', questionRoute);
 app.use('/api/auth', authRoute);
 
-app.listen(3000, () => {
+app.get('/', (req,res) => {
+    res.send('api up!');
+});
+
+app.listen(process.env.PORT || 3000, () => {
     console.log('server running!');
 });
