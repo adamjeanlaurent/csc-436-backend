@@ -14,15 +14,19 @@ class QuizSQL {
         //       FROM QUESTION 
         //       WHERE quizID = 1
         //     )
+        
+        let obj = {};
         const queryOuter = `SELECT * FROM STUDENT_ANSWER WHERE studentID = ${studentID} AND questionID IN`;
         const queryInner = `(SELECT questionID FROM QUESTION WHERE quizID = ${quizID})`;
         const query = queryOuter + ' ' + queryInner;
 
         const [rows] = await connection.promise().query(query);
         if(rows.length !== 0) {
-            return 'took already';
+            obj.message = 'took already';
+            return obj;
         }
-        return 'has not took already';
+        obj.message = 'has not took already';
+        return obj;
     }
 
     static async GetAllQuizzes() {

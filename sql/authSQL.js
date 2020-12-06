@@ -9,17 +9,18 @@ class AuthSQL {
         
         // username is taken
         if(userExistsRows.length != 0) {
-            return 'username is taken';
+            return {message: 'username is taken'};
         }
         
         // register new student
         const hashedPassword = md5(password);
         const newUserQuery = `INSERT INTO STUDENT (username, pass) VALUES('${username}', '${hashedPassword}')`;
         const [newUserRows] = await connection.promise().query(newUserQuery);
-        return 'success';
+        return {message: 'success'};
     }
 
     static async LoginStudent(username, password) {
+        let obj = {};
         // see if username exists in db
         const userExistsQuery = `SELECT * FROM STUDENT WHERE username = '${username}'`;
         const [userExistsRows] = await connection.promise().query(userExistsQuery);
@@ -32,15 +33,18 @@ class AuthSQL {
             
             // correct password
             if(foundUserHashedPassword === loginHashedPassword) {
-                return 'success';
+                obj.message = 'success';
+                return obj;
             }
 
             else {
-                return 'wrong password';
+                obj.message = 'wrong password';
+                return obj;
             }
         }
 
-        return 'user does not exist';
+        obj.message = 'user does not exist';
+        return obj;
     }
 }
 
