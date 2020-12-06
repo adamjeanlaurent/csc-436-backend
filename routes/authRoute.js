@@ -3,7 +3,7 @@ const AuthSQL = require('../sql/authSQL');
 
 const router = Router();
 
-router.post('/register/:username/:password', (req, res) => {
+router.post('/register/:username/:password', async (req, res) => {
     const {username, password} = req.params;
 
     if(username.length === 0 || password.length === 0) {
@@ -20,7 +20,7 @@ router.post('/register/:username/:password', (req, res) => {
     }
 });
 
-router.get('/login/:username/:password', (req, res) => {
+router.get('/login/:username/:password', async (req, res) => {
     const {username, password} = req.params;
 
     if(username.length === 0 || password.length === 0 ) {
@@ -36,3 +36,5 @@ router.get('/login/:username/:password', (req, res) => {
         res.send('error');
     }
 });
+
+module.exports = router;

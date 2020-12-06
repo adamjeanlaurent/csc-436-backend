@@ -26,6 +26,20 @@ router.get('/quizStarted/:studentID/:quizID', async (req, res) => {
     catch {
         return res.send('error');
     }
-}) 
+});
+
+// get score on quiz
+router.get('/score/:studentID/:quizID', async (req, res) => {
+    const {studentID, quizID} = req.params;
+
+    try {
+        const serviceResponse = await QuizSQL.GetScoreOnQuiz(studentID, quizID);
+        return res.send(serviceResponse);
+    }
+
+    catch {
+        return res.send('error');
+    }
+});
 
 module.exports = router;

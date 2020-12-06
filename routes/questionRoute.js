@@ -13,8 +13,15 @@ router.get('/getSingleQuestion/:quizID/:questionNumber', async(req, res) => {
     }
 
     try {
-        const serviceResponse = await QuestionSQL.GetSingleQuestion(questionNumber, quizID);
-        return res.send(serviceResponse);
+        const questionServiceResponse = await QuestionSQL.GetSingleQuestion(questionNumber, quizID);
+        const questionID = questionServiceResponse[0].questionID;
+        const answersServiceResponse = await QuestionSQL.GetAllAnswersToQuestion(questionID);
+        
+        // parse response
+        let obj = questionServiceResponse[0];
+        obj.answers = answersServiceResponse;
+
+        return res.send(obj);
     }
     
     catch {
@@ -24,7 +31,7 @@ router.get('/getSingleQuestion/:quizID/:questionNumber', async(req, res) => {
 
 // answer single question
 router.post('/answerSingleQuestion/:studentID/:questionID/:answerID', async(req, res) => {
-    const {studentID, questionID, answerID} = request.params;
+    const {studentID, questionID, answerID} = req.params;
 
     if(isNaN(studentID) || isNaN(questionID) || isNaN(answerID)) {
         return res.send('error');

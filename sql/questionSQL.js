@@ -12,6 +12,13 @@ class QuestionSQL {
     static async AnswerSingleQuestion(questionID, answerID, studentID) {
         const query = `INSERT INTO STUDENT_ANSWER VALUES(${questionID}, ${answerID}, ${studentID})`;
         const [rows] = await connection.promise().query(query);
+        return 'success';
+    }
+
+    // get all possible answers for a question
+    static async GetAllAnswersToQuestion(questionID) {
+        const query = `SELECT * FROM ANSWER_POOL WHERE questionID = ${questionID}`;
+        const [rows] = await connection.promise().query(query);
         return rows;
     }
 }

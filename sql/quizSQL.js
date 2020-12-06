@@ -1,9 +1,8 @@
-const { format } = require("./connection");
 const connection = require("./connection");
 
 class QuizSQL {
     static async CheckIfTookQuizAlready(studentID, quizID) {
-        // `SELECT * 
+        // SELECT * 
         // FROM STUDENT_ANSWER
         // WHERE 
         // studentID = 1
@@ -11,12 +10,12 @@ class QuizSQL {
         // questionID 
         // IN
         //     (
-        //         SELECT * 
-        //         FROM QUESTION 
-        //         WHERE quizID = 1;
-        //     )`
+        //     SELECT questionID 
+        //       FROM QUESTION 
+        //       WHERE quizID = 1
+        //     )
         const queryOuter = `SELECT * FROM STUDENT_ANSWER WHERE studentID = ${studentID} AND questionID IN`;
-        const queryInner = `SELECT * FROM QUESTION WHERE quizID = ${quizID}`;
+        const queryInner = `(SELECT questionID FROM QUESTION WHERE quizID = ${quizID})`;
         const query = queryOuter + ' ' + queryInner;
 
         const [rows] = await connection.promise().query(query);
@@ -51,9 +50,9 @@ class QuizSQL {
         const [numberOfQuestionsRow] = await connection.promise().query(numberOfQuestionsQuery);
         const numOfQuestionsInQuiz = numberOfQuestionsRow[0].numQuestions;
 
+        // get student answers to all questions in a quiz
         const studentAnswersQueryOuter = `SELECT * FROM STUDENT_ANSWER WHERE studentID = ${studentID} AND questionID IN`;
-        const studentAnswersQueryInner = `(SELECT * FROM QUESTION WHERE quizID = ${quizID}) ORDER BY `;
-        
+        const studentAnswersQueryInner = `(SELECT questionID FROM QUESTION WHERE quizID = ${quizID})`;
         const studentAnswersQuery = (studentAnswersQueryOuter + ' ' + studentAnswersQueryInner);
         const [answerRows] = await connection.promise().query(studentAnswersQuery);
         
@@ -69,11 +68,33 @@ class QuizSQL {
             
             if(answerID === correctAnswer[0].answerID) numOfCorrectAnswers++;
             else numOfIncorrectAnswers++;
+            // console.log(` correct ${correctAnswer[0].answerID}`);
+            // console.log(` student answer ${answerID}`);
         }
         
+        // special case if they only answered some questions
+        // in which case the number of correct + incorrect will be less than the total
+        // add difference to number of incorrect
+        if(numOfCorrectAnswers + numOfIncorrectAnswers !== numOfQuestionsInQuiz) {
+            const difference = numOfQuestionsInQuiz - (numOfCorrectAnswers + numOfIncorrectAnswers);
+            numOfIncorrectAnswers += difference;
+        }
+
         let grade = ((numOfQuestionsInQuiz - numOfIncorrectAnswers) / numOfQuestionsInQuiz) * 100;
-        grade = grade.toString().fixed(2);
+        grade = grade.toFixed(2);
+        
+        const obj = {grade: grade};
+        return obj;
     }
 }
+
+// tests
+// should be
+// 100
+// 66
+// 33
+// QuizSQL.GetScoreOnQuiz(1, 2);
+// QuizSQL.GetScoreOnQuiz(2, 1);
+// QuizSQL.GetScoreOnQuiz(3, 1);
 
 module.exports = QuizSQL;

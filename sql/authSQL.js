@@ -23,12 +23,12 @@ class AuthSQL {
         // see if username exists in db
         const userExistsQuery = `SELECT * FROM STUDENT WHERE username = '${username}'`;
         const [userExistsRows] = await connection.promise().query(userExistsQuery);
-
+        
         // user exists
         if(userExistsRows.length != 0) {
             // check password
             const foundUserHashedPassword = userExistsRows[0].pass;
-            const loginHashedPassword = userExistsRows[0].username;
+            const loginHashedPassword = md5(password);
             
             // correct password
             if(foundUserHashedPassword === loginHashedPassword) {
