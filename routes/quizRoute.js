@@ -15,4 +15,17 @@ router.get('/getAllQuizzes', async (req, res) => {
     }
 });
 
+// check if user already started this quiz
+router.get('/quizStarted/:studentID/:quizID', async (req, res) => {
+    const {studentID, quizID} = req.params;
+    try {
+        const serviceResponse = await QuizSQL.CheckIfTookQuizAlready(studentID, quizID);
+        return res.send(serviceResponse);
+    }
+
+    catch {
+        return res.send('error');
+    }
+}) 
+
 module.exports = router;

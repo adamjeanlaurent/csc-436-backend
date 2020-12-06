@@ -7,7 +7,7 @@ class QuestionSQL {
         const [rows] = await connection.promise().query(query);
         return rows;
     }
-
+    
     // answer single question
     static async AnswerSingleQuestion(questionID, answerID, studentID) {
         const query = `INSERT INTO STUDENT_ANSWER VALUES(${questionID}, ${answerID}, ${studentID})`;

@@ -23,7 +23,7 @@ router.get('/getSingleQuestion/:quizID/:questionNumber', async(req, res) => {
 });
 
 // answer single question
-router.get('/answerSingleQuestion/:studentID/:questionID/:answerID', async(req, res) => {
+router.post('/answerSingleQuestion/:studentID/:questionID/:answerID', async(req, res) => {
     const {studentID, questionID, answerID} = request.params;
 
     if(isNaN(studentID) || isNaN(questionID) || isNaN(answerID)) {

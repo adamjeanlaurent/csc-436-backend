@@ -3,7 +3,7 @@ const AuthSQL = require('../sql/authSQL');
 
 const router = Router();
 
-router.get('/register/:username/:password', (req, res) => {
+router.post('/register/:username/:password', (req, res) => {
     const {username, password} = req.params;
 
     if(username.length === 0 || password.length === 0) {
