@@ -16,7 +16,12 @@ class AuthSQL {
         const hashedPassword = md5(password);
         const newUserQuery = `INSERT INTO STUDENT (username, pass) VALUES('${username}', '${hashedPassword}')`;
         const [newUserRows] = await connection.promise().query(newUserQuery);
-        return {message: 'success'};
+
+        // get the new student's studentID
+        const getStudentIDQuery = `SELECT studentID from STUDENT WHERE username = '${username}'`;
+        const [studentID] = await connection.promise().query(getStudentIDQuery);
+        
+        return {message: 'success', studentID: studentID[0].studentID};
     }
 
     static async LoginStudent(username, password) {
@@ -24,7 +29,7 @@ class AuthSQL {
         // see if username exists in db
         const userExistsQuery = `SELECT * FROM STUDENT WHERE username = '${username}'`;
         const [userExistsRows] = await connection.promise().query(userExistsQuery);
-        
+            
         // user exists
         if(userExistsRows.length != 0) {
             // check password
@@ -34,6 +39,7 @@ class AuthSQL {
             // correct password
             if(foundUserHashedPassword === loginHashedPassword) {
                 obj.message = 'success';
+                obj.studentID = userExistsRows[0].studentID;
                 return obj;
             }
 
