@@ -28,12 +28,26 @@ router.get('/quizStarted/:studentID/:quizID', async (req, res) => {
     }
 });
 
-// get score on quiz
-router.get('/score/:studentID/:quizID', async (req, res) => {
+// get gradebook for student
+router.get('/gradebook/:studentID', async (req, res) => {
+    const {studentID} = req.params;
+
+    try {
+        const serviceResponse = await QuizSQL.GetGradebook(studentID);
+        return res.send(serviceResponse);
+    }
+
+    catch(e) {
+        return res.send(e);
+    }
+});
+
+// get score quiz
+router.post('/score/:studentID/:quizID', async (req, res) => {
     const {studentID, quizID} = req.params;
 
     try {
-        const serviceResponse = await QuizSQL.GetScoreOnQuiz(studentID, quizID);
+        const serviceResponse = await QuizSQL.ScoreQuiz(studentID, quizID);
         return res.send(serviceResponse);
     }
 

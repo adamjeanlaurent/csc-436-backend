@@ -35,20 +35,14 @@ class QuizSQL {
         return rows;
     }
 
-    static async GetScoreOnQuiz(studentID, quizID) {
-        // `SELECT * 
-        // FROM STUDENT_ANSWER
-        // WHERE 
-        // studentID = 1
-        // AND
-        // questionID 
-        // IN
-        //     (
-        //         SELECT * 
-        //         FROM QUESTION 
-        //         WHERE quizID = 1;
-        //     )`
+    static async GetGradebook(studentID) {
+        // get all graded quizzes for student
+        const gradedQuzziesQuery = `SELECT score, SCORE.quizID, studentID, title FROM SCORE, QUIZ WHERE SCORE.quizID = QUIZ.quizID AND studentID = ${studentID}`;
+        const [gradedQuizzes] = await connection.promise().query(gradedQuzziesQuery);
+        return gradedQuizzes;
+    }
 
+    static async ScoreQuiz(studentID, quizID) {
         // get total number of question in quiz
         const numberOfQuestionsQuery = `SELECT numQuestions FROM QUIZ WHERE quizID = ${quizID}`;
         const [numberOfQuestionsRow] = await connection.promise().query(numberOfQuestionsQuery);
@@ -85,10 +79,11 @@ class QuizSQL {
         }
 
         let grade = ((numOfQuestionsInQuiz - numOfIncorrectAnswers) / numOfQuestionsInQuiz) * 100;
-        grade = grade.toFixed(2);
+        // grade = grade.toFixed(2);
         
-        const obj = {grade: grade};
-        return obj;
+        // insert score into score table
+        await connection.promise().query(`INSERT INTO SCORE VALUES (${parseInt(grade)}, ${studentID}, ${quizID})`);
+        return {message: "inserted grade"};
     }
 }
 
