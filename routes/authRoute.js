@@ -7,7 +7,7 @@ router.post('/register/:username/:password', async (req, res) => {
     const {username, password} = req.params;
 
     if(username === 'empty' || password === 'empty') {
-        return res.send('error: password and username cant be empty');
+        return res.send({message: 'error: password and username cant be empty'});
     }
 
     try {
