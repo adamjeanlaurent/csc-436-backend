@@ -2,29 +2,23 @@ const connection = require("./connection");
 
 class QuizSQL {
     static async CheckIfTookQuizAlready(studentID, quizID) {
-        // SELECT * 
-        // FROM STUDENT_ANSWER
-        // WHERE 
-        // studentID = 1
-        // AND
-        // questionID 
-        // IN
-        //     (
-        //     SELECT questionID 
-        //       FROM QUESTION 
-        //       WHERE quizID = 1
-        //     )
-        
         let obj = {};
+        // get all answers student has answered in this quiz
+        // we do this because, if they have answered a question arleady in this quiz
+        // that means they have taken it before
         const queryOuter = `SELECT * FROM STUDENT_ANSWER WHERE studentID = ${studentID} AND questionID IN`;
         const queryInner = `(SELECT questionID FROM QUESTION WHERE quizID = ${quizID})`;
         const query = queryOuter + ' ' + queryInner;
 
         const [rows] = await connection.promise().query(query);
+
+        // taken already
         if(rows.length !== 0) {
             obj.message = 'took already';
             return obj;
         }
+        
+        // npt taken already
         obj.message = 'has not took already';
         return obj;
     }
@@ -36,7 +30,7 @@ class QuizSQL {
     }
 
     static async GetGradebook(studentID) {
-        // get all graded quizzes for student
+        // get all graded quizzes scores for student
         const gradedQuzziesQuery = `SELECT score, SCORE.quizID, studentID, title FROM SCORE, QUIZ WHERE SCORE.quizID = QUIZ.quizID AND studentID = ${studentID}`;
         const [gradedQuizzes] = await connection.promise().query(gradedQuzziesQuery);
         return gradedQuizzes;
@@ -48,7 +42,7 @@ class QuizSQL {
         const [numberOfQuestionsRow] = await connection.promise().query(numberOfQuestionsQuery);
         const numOfQuestionsInQuiz = numberOfQuestionsRow[0].numQuestions;
 
-        // get student answers to all questions in a quiz
+        // get student answers to all questions in quiz
         const studentAnswersQueryOuter = `SELECT * FROM STUDENT_ANSWER WHERE studentID = ${studentID} AND questionID IN`;
         const studentAnswersQueryInner = `(SELECT questionID FROM QUESTION WHERE quizID = ${quizID})`;
         const studentAnswersQuery = (studentAnswersQueryOuter + ' ' + studentAnswersQueryInner);
@@ -56,21 +50,21 @@ class QuizSQL {
         
         let numOfCorrectAnswers = 0;
         let numOfIncorrectAnswers = 0;
-        // compare answers 
+
+        // compare student's answers to actual answers
         for(let answer of answerRows) {
             const answerID = answer.answerID; 
             const questionID = answer.questionID;
             
+            // get correct answers to questino
             const correctAnswerQuery = `SELECT answerID from ANSWER_POOL WHERE questionID = ${questionID} AND correctFlag = 1`;
             const [correctAnswer] = await connection.promise().query(correctAnswerQuery);
             
-            if(answerID === correctAnswer[0].answerID) numOfCorrectAnswers++;
-            else numOfIncorrectAnswers++;
-            // console.log(` correct ${correctAnswer[0].answerID}`);
-            // console.log(` student answer ${answerID}`);
+            if(answerID === correctAnswer[0].answerID) numOfCorrectAnswers++; // student answer === correct answer
+            else numOfIncorrectAnswers++; // student answer != correct answer
         }
         
-        // special case if they only answered some questions
+        // special case if they only answered some of the questions in the quiz
         // in which case the number of correct + incorrect will be less than the total
         // add difference to number of incorrect
         if(numOfCorrectAnswers + numOfIncorrectAnswers !== numOfQuestionsInQuiz) {
@@ -79,7 +73,6 @@ class QuizSQL {
         }
 
         let grade = ((numOfQuestionsInQuiz - numOfIncorrectAnswers) / numOfQuestionsInQuiz) * 100;
-        // grade = grade.toFixed(2);
         
         // insert score into score table
         await connection.promise().query(`INSERT INTO SCORE VALUES (${parseInt(grade)}, ${studentID}, ${quizID})`);

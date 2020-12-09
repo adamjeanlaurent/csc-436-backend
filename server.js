@@ -14,10 +14,12 @@ app.use('/api/quiz', quizRoute);
 app.use('/api/question', questionRoute);
 app.use('/api/auth', authRoute);
 
+// root path tells you if api is up
 app.get('/', (req,res) => {
     res.send('api up!');
 });
 
+// run server
 app.listen(process.env.PORT || 3000, () => {
     console.log('server running!');
 });

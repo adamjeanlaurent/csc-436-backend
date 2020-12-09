@@ -3,6 +3,7 @@ const AuthSQL = require('../sql/authSQL');
 
 const router = Router();
 
+// register student
 router.post('/register/:username/:password', async (req, res) => {
     const {username, password} = req.params;
 
@@ -20,6 +21,7 @@ router.post('/register/:username/:password', async (req, res) => {
     }
 });
 
+// login student
 router.get('/login/:username/:password', async (req, res) => {
     const {username, password} = req.params;
 

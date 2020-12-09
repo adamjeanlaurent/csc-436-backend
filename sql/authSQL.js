@@ -1,6 +1,7 @@
 const connection = require("./connection");
 const md5 = require('md5');
 
+// SQL relating to user authentication
 class AuthSQL {
     static async RegisterNewStudent(username, password) {
         // check if that username is taken
@@ -13,6 +14,8 @@ class AuthSQL {
         }
         
         // register new student
+
+        // hash password
         const hashedPassword = md5(password);
         const newUserQuery = `INSERT INTO STUDENT (username, pass) VALUES('${username}', '${hashedPassword}')`;
         const [newUserRows] = await connection.promise().query(newUserQuery);
@@ -42,13 +45,15 @@ class AuthSQL {
                 obj.studentID = userExistsRows[0].studentID;
                 return obj;
             }
-
+            
+            // wrong password
             else {
                 obj.message = 'wrong password';
                 return obj;
             }
         }
-
+        
+        // user not found in db
         obj.message = 'user does not exist';
         return obj;
     }
